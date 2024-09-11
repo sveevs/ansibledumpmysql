@@ -1,0 +1,25 @@
+- name: Dump Mysql
+  hosts: Server
+  become: yes
+
+  vars:
+    backupserver: /media/video/.backup/server/
+    bd: [mysql,postfix,roundcubemail]
+  tasks:
+
+  - name: Start dump
+    mysql_db:
+#      ckeck_implicit_admin: yes
+      login_user: root
+      login_password: Password
+      config_file: /etc/my.cnf
+      login_unix_socket: /var/lib/mysql/mysql.sock
+      name: "{{ item }}"
+      state: dump
+      target: /media/.backup/server/{{ansible_date_time.date}}/{{inventory_hostname}}{{ item }}.sql
+    loop: "{{bd}}"
+
+
+  - name: debug massiv
+    debug:
+      msg: "{{ backupserver }}"
